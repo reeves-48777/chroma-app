@@ -84,22 +84,22 @@ const extractPalette = () => {
       @apply rounded-lg flex items-center justify-center border overflow-clip;
       background-image: linear-gradient(
           45deg,
-          oklch(var(--nc)) 12.5%,
-          transparent 12.5%,
+          oklch(var(--nc)) 3.125%,
+          transparent 3.125%,
           transparent 50%,
           oklch(var(--nc)) 50%,
-          oklch(var(--nc)) 62.5%,
-          transparent 62.5%,
+          oklch(var(--nc)) 53.125%,
+          transparent 53.125%,
           transparent
         ),
         linear-gradient(
           45deg,
-          oklch(var(--nc)) 12.5%,
-          transparent 12.5%,
+          oklch(var(--nc)) 3.125%,
+          transparent 3.125%,
           transparent 50%,
           oklch(var(--nc)) 50%,
-          oklch(var(--nc)) 62.5%,
-          transparent 62.5%,
+          oklch(var(--nc)) 53.125%,
+          transparent 53.125%,
           transparent
         );
       background-size: 20px 20px;
