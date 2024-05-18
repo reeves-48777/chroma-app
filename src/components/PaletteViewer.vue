@@ -20,7 +20,7 @@ const props = defineProps<ViewerProps>();
 
 <style scoped>
 .container {
-  @apply space-y-8 p-8 border rounded-xl bg-base-100;
+  @apply space-y-8 p-8 rounded-xl bg-base-200 dark:bg-base-300;
 }
 
 .view-palette {

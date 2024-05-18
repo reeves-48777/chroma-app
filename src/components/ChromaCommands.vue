@@ -67,10 +67,10 @@ const extractPalette = () => {
 
 <style scoped>
 .commands {
-  @apply w-full flex flex-wrap bg-base-100 rounded-xl p-4 lg:p-8 border;
+  @apply w-full flex flex-wrap bg-base-200 dark:bg-base-300 rounded-xl p-4 lg:p-8;
 
   .image-import {
-    @apply space-x-8 flex items-stretch justify-start border rounded-lg py-2 px-4 self-start;
+    @apply bg-base-100 space-x-8 flex items-stretch justify-start rounded-lg py-2 px-4 self-start;
 
     .group {
       @apply flex flex-col space-y-2;
