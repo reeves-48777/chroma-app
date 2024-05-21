@@ -21,7 +21,8 @@
     "noFallthroughCasesInSwitch": true,
 
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@wasm/*": ["./chroma-wasm/pkg/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/utils.js"],

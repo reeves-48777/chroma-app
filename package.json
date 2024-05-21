@@ -15,11 +15,11 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
-    "@wasm-tool/wasm-pack-plugin": "^1.7.0",
     "autoprefixer": "^10.4.19",
     "daisyui": "^4.11.1",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
+    "vite-plugin-wasm": "^3.3.0",
     "vue-tsc": "^2.0.6"
   }
 }
