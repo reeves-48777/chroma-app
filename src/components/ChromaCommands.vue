@@ -4,11 +4,22 @@
       <div class="group">
         <h1>Importer depuis une image :</h1>
         <ChromaFileInput v-model:file="file" />
+        <h1>Nombre de couleurs à extraire :</h1>
+        <input
+          type="range"
+          min="5"
+          max="12"
+          step="1"
+          value="5"
+          class="range"
+          v-model="nColors"
+        />
+        <span>{{ nColors }}</span>
         <div class="space"></div>
         <button
           :disabled="buttonDisabled"
           class="btn btn-accent text-xl"
-          @click="extractPalette"
+          @click="handleExtractClick"
         >
           Extraire la palette
         </button>
@@ -18,6 +29,16 @@
         <img v-if="filePreview" :src="filePreview" alt="Image preview" />
         <div v-else>Aucune image n'a été choisie</div>
       </figure>
+      <div v-if="file && extracted.length" class="palette-preview">
+        <h1>Couleurs extraites:</h1>
+        <div class="w-full h-full grid grid-rows-4 grid-cols-5 gap-2">
+          <div
+            v-for="(color, index) in extracted"
+            :style="`background: ${extracted[index]}`"
+            :key="index"
+          ></div>
+        </div>
+      </div>
     </div>
     <!-- <div class="image-import">
       <div class="group">
@@ -43,8 +64,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, reactive } from 'vue';
 import ChromaFileInput from '@/components/ChromaFileInput.vue';
+import { extractPalette } from '@/core';
+import init from '@wasm/chroma_wasm';
+
+const extracted = ref([]);
+const nColors = ref(5);
 
 const file = ref<Blob | null>(null);
 const filePreview = computed(() => {
@@ -60,8 +86,20 @@ const buttonDisabled = computed(() => {
   return true;
 });
 
-const extractPalette = () => {
-  alert('Extraction de la palette en cours');
+const handleExtractClick = async () => {
+  if (file.value && file.value.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = async (e: any) => {
+      const arrayBuffer = e.target.result;
+      await init();
+      extracted.value = extractPalette(new Uint8Array(arrayBuffer), nColors);
+      console.log('successfully extracted colors');
+      console.log(extracted.value);
+    };
+    reader.readAsArrayBuffer(file.value);
+  } else {
+    alert('Please upload a valid image file');
+  }
 };
 </script>
 
@@ -70,7 +108,7 @@ const extractPalette = () => {
   @apply w-full flex flex-wrap bg-base-200 dark:bg-base-300 rounded-xl p-4 lg:p-8;
 
   .image-import {
-    @apply bg-base-100 space-x-8 flex items-stretch justify-start rounded-lg py-2 px-4 self-start;
+    @apply bg-base-100 space-x-8 flex items-stretch justify-start rounded-lg py-6 px-8 self-start;
 
     .group {
       @apply flex flex-col space-y-2;
@@ -113,6 +151,10 @@ const extractPalette = () => {
 
   .image-preview {
     @apply w-64 flex flex-col items-center;
+  }
+
+  .palette-preview > div > div {
+    @apply size-8 rounded-full;
   }
 }
 </style>
