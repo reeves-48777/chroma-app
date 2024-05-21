@@ -9,7 +9,7 @@ export default {
     },
   },
   daisyui: {
-    themes: ['fantasy', 'dim'],
+    themes: ['dim', 'fantasy'],
   },
   plugins: [daisyui],
 };
