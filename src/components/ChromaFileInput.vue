@@ -5,6 +5,7 @@
       id="file-upload"
       class="file-upload-input"
       @change="handleFileUpload"
+      accept="image/*"
     />
     <label for="file-upload" class="file-upload-label">
       <i class="material-symbols-outlined file-upload-icon">upload</i>
@@ -36,7 +37,7 @@ const handleFileUpload = (event: any) => {
 }
 
 .file-upload-icon {
-  @apply text-2xl py-2 px-3 bg-neutral text-neutral-content;
+  @apply text-2xl py-2 px-3;
 }
 
 .file-upload-text {
