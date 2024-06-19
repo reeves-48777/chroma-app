@@ -1,26 +1,27 @@
 <script setup lang="ts">
-import PaletteColor from './PaletteColor.vue';
+import PaletteColor from '@/components/PaletteColor.vue';
+import ChromaSkeleton from '@/components/ChromaSkeleton.vue';
+import { useColorStore } from '@/stores/colors';
 
-interface ViewerProps {
-  colors: string[];
-}
-//@ts-ignore
-const props = defineProps<ViewerProps>();
+const colorStore = useColorStore();
 </script>
 
 <template>
   <div class="container">
-    <section class="view-palette">
-      <div v-for="(_, index) in colors" :key="index">
-        <PaletteColor v-model:color="colors[index]" />
+    <section v-if="colorStore.colors.length" class="view-palette">
+      <div v-for="(_, index) in colorStore.colors" :key="index">
+        <PaletteColor v-model:color="colorStore.colors[index]" />
       </div>
     </section>
+    <chroma-skeleton v-else>
+      <div class="w-full h-32"></div>
+    </chroma-skeleton>
   </div>
 </template>
 
 <style scoped>
 .container {
-  @apply space-y-8 p-8 rounded-xl bg-base-200 dark:bg-base-300;
+  @apply space-y-8 p-8 rounded-xl;
 }
 
 .view-palette {

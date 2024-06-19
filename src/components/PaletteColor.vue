@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed } from 'vue';
 
 const color = defineModel<string>('color');
 
 // todo color conversion (from 'red', '#f00', 0xFF0000 to '#FF0000')
-const colorStyle = ref<string>(`background: ${color.value}`);
+const colorStyle = computed(() => {
+  return `background: ${color.value}`;
+});
 
 const handleMouseOver = () => {};
 const handleMouseLeave = () => {};
@@ -28,10 +30,10 @@ const handleMouseLeave = () => {};
 }
 
 .palette-color {
-  @apply relative select-none flex w-36 h-24 items-end justify-center p-2 rounded-sm;
+  @apply relative border select-none flex w-36 h-24 items-end justify-center p-2 rounded-sm;
 }
 
-.palette-color::before {
+/* .palette-color::before {
   content: '';
   position: absolute;
   top: 0;
@@ -45,5 +47,5 @@ const handleMouseLeave = () => {};
 }
 .palette-color:hover::before {
   transform: scaleX(1.029) scaleY(1.042);
-}
+} */
 </style>

@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { reactive } from 'vue';
 
 import PaletteViewer from '@/components/PaletteViewer.vue';
 import ChromaCommands from '@/components/ChromaCommands.vue';
 
-const colors = reactive([
-  '#ff0000',
-  '#00ff00',
-  '#0000ff',
-  '#ffff00',
-  '#00ffff',
-]);
+const colors = reactive([]);
 </script>
 
 <template>

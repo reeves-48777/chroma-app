@@ -15,49 +15,37 @@
         v-model="nColors"
         :disabled="disableInputs"
       />
+      <!-- <Slider :min="5" :max="12" :step="1" v-model="nColors" /> -->
       <div class="space"></div>
-      <button
-        :disabled="disableInputs"
-        class="btn btn-accent text-xl"
-        @click="handleExtractClick"
-      >
-        Extraire la palette
-      </button>
-      <div class="space"></div>
+      <Button @click="handleExtractClick"> Extraire la palette </Button>
     </chroma-group-layout>
     <figure class="image-preview">
       <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" />
       <div v-else>Aucune image n'a été choisie</div>
     </figure>
-    <div v-if="image && extracted.length" class="palette-preview">
-      <h1>Selectionnez les couleurs:</h1>
-      <div class="mt-2 w-full grid grid-rows-4 grid-cols-5 gap-2">
-        <button
-          class="btn btn-circle"
-          v-for="(color, index) in extracted"
-          :style="[
-            `background-color: ${color}}`,
-            isSelected(color) ? 'border border-accent' : '',
-          ]"
-          :key="index"
-          @click="handleColorClick(index)"
-        ></button>
-      </div>
-    </div>
+    <chroma-group-layout>
+      <ChromaColorSelector />
+      <div class="space"></div>
+      <Button @click="handleApplyClick()"> Appliquer les couleurs </Button>
+    </chroma-group-layout>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
 import ChromaGroupLayout from '@/layouts/ChromaGroupLayout.vue';
-import ChromaFileInput from './ChromaFileInput.vue';
+import ChromaColorSelector from '@/components/ChromaColorSelector.vue';
+import ChromaFileInput from '@/components/ChromaFileInput.vue';
 
-import { computed, ref } from 'vue';
-import init, { extract_palette } from '@wasm/chroma_wasm';
+import { computed, ref, toValue } from 'vue';
+import { useColorStore } from '@/stores/colors';
+import { useColor } from '@/composables/useColor';
+import init, { extract_palette, add_matching_tint } from '@wasm/chroma_wasm';
+
+const colorStore = useColorStore();
 
 const extracted = ref<string[]>([]);
 const nColors = ref<number>(5);
-
-const selectedColors = ref<string[]>([]);
 
 const image = ref<Blob | null>(null);
 const imagePreview = computed(() => {
@@ -66,10 +54,7 @@ const imagePreview = computed(() => {
   }
 });
 const disableInputs = computed(() => {
-  if (image.value) {
-    return false;
-  }
-  return true;
+  return !image.value;
 });
 
 const handleExtractClick = async () => {
@@ -80,10 +65,11 @@ const handleExtractClick = async () => {
       await init();
       extracted.value = extract_palette(
         new Uint8Array(arrayBuffer),
-        nColors.value
-      ).map((color: any) => `rgba(${color[0]}, ${color[1]}, ${color[2]}, 1)`);
-      console.log('successfully extracted colors');
-      console.log(extracted.value);
+        toValue(nColors)
+      ).map((color: { r: number; g: number; b: number }) =>
+        useColor().rgbToHex(color)
+      );
+      colorStore.selected.setColors(extracted);
     };
     reader.readAsArrayBuffer(image.value);
   } else {
@@ -91,58 +77,30 @@ const handleExtractClick = async () => {
   }
 };
 
-const handleColorClick = (colorIndex: number) => {
-  const index = selectedColors.value.findIndex(
-    (color) => color === extracted.value[colorIndex]
+const handleApplyClick = () => {
+  colorStore.setColors(
+    colorStore.selected.colors.filter((c) => c.selected).map((c) => c.value)
   );
-  if (index === -1) {
-    selectedColors.value.push(extracted.value[colorIndex]);
-  } else {
-    selectedColors.value.splice(index, 1);
-  }
-};
-
-const isSelected = (color: string) => {
-  return selectedColors.value.includes(color);
 };
 </script>
 
 <style scoped>
 .image-importer {
-  @apply flex gap-12 rounded-lg bg-base-100 py-6 px-8;
-}
+  @apply flex gap-12 rounded-lg py-6 px-8;
 
-.image-importer figure {
-  @apply rounded-lg flex items-center justify-center border overflow-clip;
-  background-image: linear-gradient(
-      45deg,
-      oklch(var(--nc)) 3.125%,
-      transparent 3.125%,
-      transparent 50%,
-      oklch(var(--nc)) 50%,
-      oklch(var(--nc)) 53.125%,
-      transparent 53.125%,
-      transparent
-    ),
-    linear-gradient(
-      45deg,
-      oklch(var(--nc)) 3.125%,
-      transparent 3.125%,
-      transparent 50%,
-      oklch(var(--nc)) 50%,
-      oklch(var(--nc)) 53.125%,
-      transparent 53.125%,
-      transparent
-    );
-  background-size: 20px 20px;
-  background-position: 0 0, 5px 5px; /* Ajuste la position du motif */
-}
+  .image-preview {
+    @apply flex flex-col items-center justify-center;
+    @apply border rounded-lg;
+    @apply w-96;
+    @apply overflow-clip;
 
-.image-importer figure div {
-  @apply rounded-lg bg-base-100 p-3 border;
-}
+    background-image: radial-gradient(oklch(var(--nc)) 2px, transparent 2px);
+    background-size: 32px 32px;
+    background-color: transparent;
 
-.image-preview {
-  @apply w-64 flex flex-col items-center;
+    div {
+      @apply rounded-lg p-3 border;
+    }
+  }
 }
 </style>
